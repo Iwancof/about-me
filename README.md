@@ -1,6 +1,6 @@
 # Blog
 
-preparing...
+- [(JP) SECCON 2022 Writeup](/writeups/SECCON.md)
 
 # About Me
 
