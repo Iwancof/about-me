@@ -22,10 +22,7 @@ NX:       NX enabled
 PIE:      No PIE (0x400000)
 ```
 
-
-
-<details>
-<summary>ソースコード</summary>
+ソースコード
 
 ```c
 #include <stdio.h>
@@ -190,15 +187,12 @@ int main(void) {
 }
 ```
 
-</details>
-
 簡単なメモアプリっぽいですね。
 グローバルな `notes` に先頭ポインタが40個入っていて、そこから next を手繰っていくアプリケーションです。
 
 さて、この問題はpwn全三問シリーズの一問目で、二問目はこの問題のセキュリティにパッチを当てたらしいことが仄めかされています。そこで diff を使ってソースコードを比較することにしました。
 
-diff
-```
+```diff c
 85c85
 <     readn(page, size);
 ---
@@ -232,7 +226,7 @@ PIE:      No PIE (0x400000)
 
 同じように二問目と三問目でdiffを取ると、
 
-```
+```diff c
 81a82
 >     if (size > 0x500) die("your buffer is too big");
 ```
