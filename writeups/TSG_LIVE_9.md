@@ -22,9 +22,10 @@ NX:       NX enabled
 PIE:      No PIE (0x400000)
 ```
 
-ソースコード
+
 
 <details>
+<summary>ソースコード</summary>
 
 ```c
 #include <stdio.h>
