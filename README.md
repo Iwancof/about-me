@@ -1,6 +1,7 @@
 # Blog
 
 - [(JP) SECCON 2022 Writeup](/writeups/SECCON.md)
+- [(JP) TSG LIVE 9 CTF Writeup](/writeups/TSG_LIVE_9.md)
 
 # About Me
 
