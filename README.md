@@ -5,19 +5,16 @@
 
 # About Me
 
-Hi there!
-I'm Iwancof! 
+Hello, my name is Ryosuke Iwahashi (a.k.a Iwancof) and I am a third-year student at the University of Tsukuba. I have a deep interest in low-level development and low-level security. Apart from this, I am deeply curious about various fields of engineering, mathematics, and the natural sciences.
 
-I'm 19 years old, and belong to Kosen.  I will be going to Tsukuba University next year.
-My main interest is Security, Development, and all of Science.
+I have organized and participated in several security events known as Capture the Flag (CTF) competitions, where I've won cash prizes at SECCON, one of the biggest CTF events in Japan. I've also had the opportunity to write papers on circuit-level security, further cultivating my expertise in this domain.
 
-I play and organize CTFs and write some papers. low-level offensive security is Wonderful in particular. (I love pwn challenge)
+Currently, I'm working on FPGA development using Verilog, which allows me to gain knowledge from the low-level up to the middleware.
 
-I love Rust lang for development.
-I published some libraries to crates.io and created a tool for programming contests (e.g. AtCoder).
-Of course, I can use any other major languages(C/C++, Assembly, Python, TypeScript, ...)
+I often use Rust in my development work, contributing several libraries to crates.io, and developing tools for binary optimization.
+In addition to Rust, I am proficient in multiple programming languages, including C/C++, C#, Python, and TypeScript. I also have the skill to write assembly code for x86_64 architecture and have previously embarked on a project developing an operating system solely with assembly code.
 
-Apart from computers, I like pure mathematics and electromagnetism. I used Hilbert Space for kernel multivariate analysis in my old research. and now, use electromagnetism for transistor security.
+Thank you for your time and I look forward to potentially collaborating in the future.
 
 # Links
 
@@ -26,40 +23,52 @@ Apart from computers, I like pure mathematics and electromagnetism. I used Hilbe
 
 # Portfolio
 
+## Products
+- [MyFirstOS](https://github.com/Iwancof/MyFirstOS)
+    - My First OS written by Assembly(x86_64).
+- [SECR](https://github.com/Iwancof/SECR)
+    - Security Enhanced CPU for RISC-V.
+    - Seccamp's final deliverable.
+- [Full-Scratch-C-exception-handler](https://github.com/Iwancof/Full-scratch-C-exception-handler)
+    - I implemented handling of C++'s `try`-`catch` from scratch using the dwarf information emitted by the compiler.
+- [random_struct_layout](https://github.com/Iwancof/random_struct_layout)
+    - A library that obfuscates the struct layout of Rust using proc-macro.
+
 ## Skill Set
 - Languages
-    - Rust, C/C++, C#, Assembly(x86_64), Python, TypeScript
-- Security
+    - Rust, Verilog, C/C++, C#, Assembly(x86_64), Python, TypeScript
+- Security(CTF)
     - Pwn, Rev, Pentest
 - Other
-    - Docker, Linux, Network
+    - FPGA, Docker, Linux, Infrastructure
 
 ## Skill Set(Detail)
 - Qualification
     - 応用情報技術者(AP)
+    - TOEIC(775)
 - Rust
-    - Proc-Macro
+    - proc-macro
     - OS Development
     - Unsafe Rust
+- C
+    - C99
+    - C11
 - Security
     - Binary
         - Statically Analysis(Ghidra)
         - Exploits
         - GLIBC malloc, FILE struct, ...
-        - ELF structor
+        - ELF structure
     - Pentest
         - HackTheBox
-    - Cryptography
-        - Homomorphic encryption
     - Low-Level
-        - Transistor Security
+        - Circuit Level Security
 - Web
-    - TypeScript(I made simple game)
-- Infra
-    - Network(Operates a medium-sized network of about 300 units.)
+    - I'm working at the large image hosting service written by Svelte and TypeScript.
+- Infrastructure
+    - I'm hosting several web services using Cloudflare.
+    - Network(I have experience operating a network of around 300 people.)
     - Monitoring(Grafana, Log analysis)
 - Linux
     - Arch Linux(about 3 years)
     - Reading kernel
-
-
