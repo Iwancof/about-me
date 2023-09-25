@@ -2,6 +2,7 @@
 
 - [(JP) SECCON 2022 Writeup](/writeups/SECCON.md)
 - [(JP) TSG LIVE 9 CTF Writeup](/writeups/TSG_LIVE_9.md)
+- [(JP) ASIS CTF 2023 Writeup](/writeups/ASIS_CTF_2023.md)
 
 # About Me
 
