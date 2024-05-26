@@ -17,6 +17,7 @@ Thank you for your time and I look forward to potentially collaborating in the f
 - [(JP) TSG LIVE 9 CTF Writeup](/writeups/TSG_LIVE_9.md)
 - [(JP) ASIS CTF 2023 Writeup](/writeups/ASIS_CTF_2023.md)
 - [(JP) vsCTF 2023 Writeup](/writeups/vsCTF2023.md)
+- [(JP) DEFCON quals 2024 Writeup](/writeups/DEFCON-quals-2024.md)
 
 # Links
 
