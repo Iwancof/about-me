@@ -11,13 +11,14 @@ In addition to Rust, I am proficient in multiple programming languages, includin
 
 Thank you for your time and I look forward to potentially collaborating in the future.
 
-# Blog
+# Writeups
 
 - [(JP) SECCON 2022 Writeup](/writeups/SECCON.md)
 - [(JP) TSG LIVE 9 CTF Writeup](/writeups/TSG_LIVE_9.md)
 - [(JP) ASIS CTF 2023 Writeup](/writeups/ASIS_CTF_2023.md)
 - [(JP) vsCTF 2023 Writeup](/writeups/vsCTF2023.md)
 - [(JP) DEFCON quals 2024 Writeup](/writeups/DEFCON-quals-2024.md)
+- [(JP) SECCON 2024 Quals Writeup](/writeups/SECCON-quals-2024.md)
 
 # Links
 
