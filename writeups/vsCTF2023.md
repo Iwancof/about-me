@@ -1,3 +1,10 @@
+---
+layout: page
+title: vsCTF 2023
+parent: CTF Writeups
+nav_order: 4
+---
+
 # 出た
 
 [vsCTF2023](https://ctf.viewsource.me/)
@@ -73,7 +80,6 @@ def exploit():
 
 if __name__ == "__main__":
     exploit()
-
 ```
 
 # Tiny-Pwn

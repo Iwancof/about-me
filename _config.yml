@@ -1,0 +1,77 @@
+# Site settings
+title: Iwancof's Portfolio and CTF Writeups
+description: Technical portfolio and CTF competition writeup collection by Ryosuke Iwahashi (Iwancof)
+url: "https://iwancof.github.io" # Replace with your GitHub Pages URL
+baseurl: "/about-me" # The subpath of your site, e.g. /blog
+# domain: your-github-username.github.io # Uncomment if you have a custom domain
+
+author:
+  name: Ryosuke Iwahashi
+  twitter: Iwancof_ptr
+  github: Iwancof
+
+# Build settings
+theme: just-the-docs
+permalink: pretty
+
+# Just the Docs settings
+# See: https://just-the-docs.github.io/just-the-docs/docs/configuration/
+color_scheme: dark
+search_enabled: true
+heading_anchors: true
+nav_sort: case_sensitive
+
+# External links (shown in the navigation)
+aux_links:
+  "GitHub":
+    - "https://github.com/Iwancof"
+  "Twitter":
+    - "https://twitter.com/Iwancof_ptr"
+
+# Enable or disable the site search
+search_enabled: true
+# Enable support for hyphenated search words
+search_tokenizer_separator: /[\s/]+/
+
+# Collections for different types of content
+collections:
+  writeups:
+    output: true
+    permalink: /writeups/:path/
+
+# Default YAML values for files in collections
+defaults:
+  -
+    scope:
+      path: ""
+      type: "writeups"
+    values:
+      layout: "page"
+  -
+    scope:
+      path: ""
+    values:
+      layout: "default"
+
+# Exclude these files from production site
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - .bundle/
+  - .jekyll-cache/
+  - .git/
+  - .github/
+
+# Markdown processing
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+  input: GFM
+  auto_ids: true
+  toc_levels: 1..6
+  smart_quotes: lsquo,rsquo,ldquo,rdquo
+  syntax_highlighter_opts:
+    block:
+      line_numbers: true
+      start_line: 1

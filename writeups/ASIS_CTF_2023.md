@@ -1,7 +1,14 @@
+---
+layout: page
+title: ASIS CTF 2023
+parent: CTF Writeups
+nav_order: 3
+---
+
 SECCON 2023 予選で pwn サボっていたツケを払わされたので、本戦では活躍したいってことで CTFtime で適当にやってるやつに参加した。
 pwn 結構面白かったし writeup 執筆も再開したいよねってことで書いていく。
 
-今回は ASIS CTF 2023 というCTFに個人で出た。
+今回は ASIS CTF 2023 という CTF に個人で出た。
 
 https://asisctf.com/
 

