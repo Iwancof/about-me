@@ -19,6 +19,7 @@ Thank you for your time and I look forward to potentially collaborating in the f
 - [(JP) vsCTF 2023 Writeup](/writeups/vsCTF2023.md)
 - [(JP) DEFCON quals 2024 Writeup](/writeups/DEFCON-quals-2024.md)
 - [(JP) SECCON 2024 Quals Writeup](/writeups/SECCON-quals-2024.md)
+- [(JP) SECCON 2024 Fianl Writeup](/writeups/SECCON-final-2024.md)
 
 # Links
 
