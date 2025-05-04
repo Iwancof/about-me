@@ -20,6 +20,8 @@ Thank you for your time and I look forward to potentially collaborating in the f
 - [(JP) DEFCON quals 2024 Writeup](/writeups/DEFCON-quals-2024.md)
 - [(JP) SECCON 2024 Quals Writeup](/writeups/SECCON-quals-2024.md)
 - [(JP) SECCON 2024 Fianl Writeup](/writeups/SECCON-final-2024.md)
+- [(JP) AlpacaHack Round 10](/writeups/AlpacaHack-Round-10)
+- [(JP) TsukuCTF 2025](/writeups/TsukuCTF2025)
 
 # Links
 

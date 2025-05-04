@@ -21,3 +21,4 @@ This section contains writeups for various Capture The Flag (CTF) competitions I
 - [SECCON 2024 Quals](/writeups/SECCON-quals-2024)
 - [SECCON 2024 Final](/writeups/SECCON-final-2024)
 - [AlpacaHack Round 10](/writeups/AlpacaHack-Round-10)
+- [TsukuCTF 2025](/writeups/TsukuCTF2025)
