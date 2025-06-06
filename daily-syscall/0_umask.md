@@ -1,6 +1,7 @@
 ---
 layout: page
 title: umask
+parent: Daily Syscall
 nav_order: 1
 ---
 
