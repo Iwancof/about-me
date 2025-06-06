@@ -1,3 +1,9 @@
+---
+layout: page
+title: umask
+nav_order: 1
+---
+
 # umask
 ## implementation
 [Bootlin](https://elixir.bootlin.com/linux/v6.14.7/source/kernel/sys.c#L1908)
