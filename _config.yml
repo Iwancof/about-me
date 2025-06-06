@@ -38,6 +38,9 @@ collections:
   writeups:
     output: true
     permalink: /writeups/:path/
+  daily-syscall:
+    output: true
+    permalink: /daily-syscall/:path/
 
 # Default YAML values for files in collections
 defaults:
