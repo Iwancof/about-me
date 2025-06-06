@@ -1,4 +1,3 @@
-
 ---
 layout: page
 title: set_robust_list

@@ -1,4 +1,3 @@
-
 ---
 layout: page
 title: sched_setaffinity

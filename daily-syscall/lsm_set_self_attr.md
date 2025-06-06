@@ -1,4 +1,3 @@
-
 ---
 layout: page
 title: lsm_set_self_attr

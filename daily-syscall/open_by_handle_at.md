@@ -1,4 +1,3 @@
-
 ---
 layout: page
 title: open_by_handle_at

@@ -1,4 +1,3 @@
-
 ---
 layout: page
 title: map_shadow_stack
