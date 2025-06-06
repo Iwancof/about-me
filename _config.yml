@@ -53,6 +53,12 @@ defaults:
   -
     scope:
       path: ""
+      type: "daily-syscall"
+    values:
+      layout: "page"
+  -
+    scope:
+      path: ""
     values:
       layout: "default"
 
