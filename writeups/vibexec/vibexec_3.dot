@@ -1,0 +1,30 @@
+digraph G {
+    rankdir=LR               // 左→右に並べる
+    node [shape=circle]
+
+    // ノード定義（名無しノードは空ラベル）
+    n0 [label=""]
+    A  [label="A"]
+    C  [label="C"]
+    n4 [label=""]
+    
+    {rank = min n0}
+    {rank = max n4}
+    
+    C [
+        color = "red"
+    ]
+
+    // n0 <-> A
+    n0 -> A [label="next"]
+    A  -> A [label="prev"]
+
+    // A <-> B
+    A  -> C [label="next"]
+    C  -> A [label="prev"]
+
+    // C <-> n4
+    C  -> C [label="next"]
+    n4 -> C [label="prev"]
+}
+
