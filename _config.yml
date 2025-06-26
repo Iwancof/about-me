@@ -26,7 +26,7 @@ aux_links:
   "GitHub":
     - "https://github.com/Iwancof"
   "Twitter":
-    - "https://twitter.com/Iwancof_ptr"
+    - "https://twitter.com/Iwancof_weakptr"
 
 # Enable or disable the site search
 search_enabled: true
@@ -41,6 +41,9 @@ collections:
   daily-syscall:
     output: true
     permalink: /daily-syscall/:path/
+  codeql:
+    output: true
+    permalink: /codeql/:path
 
 # Default YAML values for files in collections
 defaults:
