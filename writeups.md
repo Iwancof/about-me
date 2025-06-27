@@ -82,12 +82,8 @@ $ asm -c amd64 'syscall; ret'
 
 あとはいい感じに飛べば良い。
 
-<details>
-<summary>
-exploit.py
-</summary>
-
 ```py
+
 from typing import List, Any, Dict
 import time
 from pwn import context, gdb, ELF, shellcraft, tube, pack, unpack, log, process, p64, p32, SigreturnFrame, ROP, asm, disasm, remote
@@ -168,10 +164,6 @@ io.interactive()
 # Midnight Flag 2025 -- SecMem
 
 AArch64のLinux上に次のようなカーネルモジュールが差し込まれる。
-
-<details>
-<summary>sec_mem.c</summary>
-
 
 ```c
 #include <linux/module.h>
@@ -365,8 +357,6 @@ MODULE_AUTHOR("Itarow");
 MODULE_DESCRIPTION("secure memory driver");
 ```
 
-</details>
-
 脆弱性は3つ。
 
 - `buffer_copy_*`が、ユーザからのコピー関数ではなく`memcpy`を使っている。
@@ -389,12 +379,6 @@ MODULE_DESCRIPTION("secure memory driver");
 最後に`core_pattern`を書き換え、root権限を取る。
 
 最終的なexploitを以下に示す。
-
-
-<details>
-<summary>
-exploit.c
-</summary>
 
 ```c
 #define _GNU_SOURCE
@@ -562,7 +546,5 @@ int main(int argc, char **argv) {
   trigger_corewin("/tmp/x", LPE_BILLY);
 }
 ```
-
-</details>
 
 ![sec_mem_solved](https://raw.githubusercontent.com/Iwancof/about-me/main/writeups/sec_mem_solved.png)
