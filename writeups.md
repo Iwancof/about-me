@@ -13,16 +13,16 @@ This section contains writeups for various Capture The Flag (CTF) competitions I
 
 ## Available Writeups
 
-- [SECCON 2022](/writeups/SECCON)
-- [TSG LIVE 9 CTF](/writeups/TSG_LIVE_9)
-- [ASIS CTF 2023](/writeups/ASIS_CTF_2023)
-- [vsCTF 2023](/writeups/vsCTF2023)
-- [DEFCON Quals 2024](/writeups/DEFCON-quals-2024)
-- [SECCON 2024 Quals](/writeups/SECCON-quals-2024)
-- [SECCON 2024 Final](/writeups/SECCON-final-2024)
-- [AlpacaHack Round 10](/writeups/AlpacaHack-Round-10)
-- [TsukuCTF 2025](/writeups/TsukuCTF2025)
-- [IERAE CTF 2025](/writeups/IERAE_CTF_2025)
+- [SECCON 2022](/about-me/writeups/SECCON)
+- [TSG LIVE 9 CTF](/about-me/writeups/TSG_LIVE_9)
+- [ASIS CTF 2023](/about-me/writeups/ASIS_CTF_2023)
+- [vsCTF 2023](/about-me/writeups/vsCTF2023)
+- [DEFCON Quals 2024](/about-me/writeups/DEFCON-quals-2024)
+- [SECCON 2024 Quals](/about-me/writeups/SECCON-quals-2024)
+- [SECCON 2024 Final](/about-me/writeups/SECCON-final-2024)
+- [AlpacaHack Round 10](/about-me/writeups/AlpacaHack-Round-10)
+- [TsukuCTF 2025](/about-me/writeups/TsukuCTF2025)
+- [IERAE CTF 2025](/about-me/writeups/IERAE_CTF_2025)
 
 ## Misc Writeups
 
